@@ -43,7 +43,7 @@ private:
 	> Created Time: Sat 20 Jun 2015 03:08:16 PM CST
  ************************************************************************/
 
-Singleton::Garbo Singleton::garbo; 
+Singleton::Garbo Singleton::garbo; 		// This is important for ~Singleton() called
 Singleton* Singleton::pinstance = NULL;
 
 Singleton* Singleton::get_instance()
