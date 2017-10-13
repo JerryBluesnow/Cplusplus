@@ -8,8 +8,6 @@
 
 定义如下：
 
-[cpp] view plain copy
-
     class CSingleton  
     {  
     private:  
@@ -27,10 +25,11 @@
     };  
 
 用户访问唯一实例的方法只有GetInstance()成员函数。如果不通过这个函数，任何创建实例的尝试都将失败，因为类的构造函数是私有的。GetInstance()使用懒惰初始化，也就是说它的返回值是当这个函数首次被访问时被创建的。这是一种防弹设计——所有GetInstance()之后的调用都返回相同实例的指针：
-
-CSingleton* p1 = CSingleton :: GetInstance();
-CSingleton* p2 = p1->GetInstance();
-CSingleton & ref = * CSingleton :: GetInstance();
+    
+    CSingleton* p1 = CSingleton :: GetInstance();
+    CSingleton* p2 = p1->GetInstance();
+    CSingleton & ref = * CSingleton :: GetInstance();
+    
 对GetInstance稍加修改，这个设计模板便可以适用于可变多实例情况，如一个类允许最多五个实例。
  
 单例类CSingleton有以下特征：
@@ -42,7 +41,6 @@ CSingleton & ref = * CSingleton :: GetInstance();
 可以在程序结束时调用GetInstance()，并对返回的指针掉用delete操作。这样做可以实现功能，但不仅很丑陋，而且容易出错。因为这样的附加代码很容易被忘记，而且也很难保证在delete之后，没有代码再调用GetInstance函数。
 一个妥善的方法是让这个类自己知道在合适的时候把自己删除，或者说把删除自己的操作挂在操作系统中的某个合适的点上，使其在恰当的时候被自动执行。
 我们知道，程序在结束的时候，系统会自动析构所有的全局变量。事实上，系统也会析构所有的类的静态成员变量，就像这些静态成员也是全局变量一样。利用这个特征，我们可以在单例类中定义一个这样的静态成员变量，而它的唯一工作就是在析构函数中删除单例类的实例。如下面的代码中的CGarbo类（Garbo意为垃圾工人）：
-[cpp] view plain copy
 
     class CSingleton  
     {  
@@ -82,8 +80,6 @@ CSingleton & ref = * CSingleton :: GetInstance();
 
 但是添加一个类的静态对象，总是让人不太满意，所以有人用如下方法来重新实现单例和解决它相应的问题，代码如下：
 
-[cpp] view plain copy
-
     class CSingleton  
     {  
     private:  
@@ -105,8 +101,6 @@ Singleton singleton = Singleton :: GetInstance();
 
 最后没有办法，我们要禁止类拷贝和类赋值，禁止程序员用这种方式来使用单例，当时领导的意思是GetInstance()函数返回一个指针而不是返回一个引用，函数的代码改为如下：
 
-[cpp] view plain copy
-
     class CSingleton  
     {  
     private:  
@@ -122,8 +116,6 @@ Singleton singleton = Singleton :: GetInstance();
     };  
 
 但我总觉的不好，为什么不让编译器不这么干呢。这时我才想起可以显示的声明类拷贝的构造函数，和重载 = 操作符，新的单例类如下：
-
-[cpp] view plain copy
 
     class CSingleton  
     {  
@@ -145,7 +137,6 @@ Singleton singleton = Singleton :: GetInstance();
 不知道这样的单例类是否还会有问题，但在程序中这样子使用已经基本没有问题了。
 
 考虑到线程安全、异常安全，可以做以下扩展
-[cpp] view plain copy
 
     class Lock  
     {  

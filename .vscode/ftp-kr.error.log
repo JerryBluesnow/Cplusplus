@@ -1,0 +1,6 @@
+[Error]
+message: Need host
+[Stack Trace]
+Error: Need host
+    at Object.set (C:\Users\jzhan107\.vscode\extensions\ruakr.ftp-kr-0.0.25\js\config.js:111:12)
+    at Promise.resolve.then (C:\Users\jzhan107\.vscode\extensions\ruakr.ftp-kr-0.0.25\js\config.js:146:36)

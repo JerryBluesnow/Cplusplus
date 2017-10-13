@@ -1,0 +1,320 @@
+{
+    "type": "d",
+    "name": "",
+    "size": 2048,
+    "files": [
+        {
+            "type": "-",
+            "name": ".clang-format",
+            "size": 2553
+        },
+        {
+            "type": "-",
+            "name": ".strtok_test.cpp.swp",
+            "size": 12288
+        },
+        {
+            "type": "d",
+            "name": ".vscode",
+            "size": 1024,
+            "files": [
+                {
+                    "type": "-",
+                    "name": "c_cpp_properties.json",
+                    "size": 2032
+                }
+            ]
+        },
+        {
+            "type": "-",
+            "name": "ab",
+            "size": 8500
+        },
+        {
+            "type": "-",
+            "name": "ab.c",
+            "size": 5471
+        },
+        {
+            "type": "d",
+            "name": "boost_multi_index_container",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "CD",
+            "size": 8235
+        },
+        {
+            "type": "-",
+            "name": "cd.c",
+            "size": 5135
+        },
+        {
+            "type": "d",
+            "name": "classFactory",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "core",
+            "size": 129648
+        },
+        {
+            "type": "d",
+            "name": "cosmos",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "decoder",
+            "size": 3321522
+        },
+        {
+            "type": "-",
+            "name": "enc",
+            "size": 8734
+        },
+        {
+            "type": "-",
+            "name": "Encription.c",
+            "size": 5781
+        },
+        {
+            "type": "-",
+            "name": "fun",
+            "size": 5619
+        },
+        {
+            "type": "-",
+            "name": "funcion.c",
+            "size": 175
+        },
+        {
+            "type": "-",
+            "name": "hello",
+            "size": 9323
+        },
+        {
+            "type": "-",
+            "name": "hello.cpp",
+            "size": 3315
+        },
+        {
+            "type": "-",
+            "name": "hello.cpp~",
+            "size": 3295
+        },
+        {
+            "type": "d",
+            "name": "macro",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "d",
+            "name": "makefile",
+            "size": 1024,
+            "files": []
+        },
+        {
+            "type": "d",
+            "name": "mem",
+            "size": 1024,
+            "files": []
+        },
+        {
+            "type": "d",
+            "name": "PythonLearning",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "README.md",
+            "size": 744
+        },
+        {
+            "type": "-",
+            "name": "sfwthig.c",
+            "size": 55017
+        },
+        {
+            "type": "-",
+            "name": "Si.cpp",
+            "size": 1794
+        },
+        {
+            "type": "-",
+            "name": "Single.cpp",
+            "size": 1794
+        },
+        {
+            "type": "d",
+            "name": "Singleton",
+            "size": 1024,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "Singleton.cpp",
+            "size": 1840
+        },
+        {
+            "type": "-",
+            "name": "Singleton.cpp.exe",
+            "size": 75150
+        },
+        {
+            "type": "-",
+            "name": "Singleton2.cpp",
+            "size": 843
+        },
+        {
+            "type": "-",
+            "name": "Singleton2.cpp.exe",
+            "size": 75052
+        },
+        {
+            "type": "-",
+            "name": "Singleton3.cp",
+            "size": 0
+        },
+        {
+            "type": "-",
+            "name": "Singleton3.cpp",
+            "size": 726
+        },
+        {
+            "type": "-",
+            "name": "Singleton3.cpp.exe",
+            "size": 76077
+        },
+        {
+            "type": "-",
+            "name": "Singleton4.cpp",
+            "size": 707
+        },
+        {
+            "type": "-",
+            "name": "Singleton4.cpp.exe",
+            "size": 76077
+        },
+        {
+            "type": "-",
+            "name": "Singleton5.cpp",
+            "size": 1183
+        },
+        {
+            "type": "-",
+            "name": "Singleton5.cpp.exe",
+            "size": 76077
+        },
+        {
+            "type": "-",
+            "name": "Singleton6.cpp",
+            "size": 993
+        },
+        {
+            "type": "-",
+            "name": "some",
+            "size": 7748
+        },
+        {
+            "type": "-",
+            "name": "somthingverification",
+            "size": 0
+        },
+        {
+            "type": "-",
+            "name": "somthingverification.cpp",
+            "size": 1794
+        },
+        {
+            "type": "-",
+            "name": "somthingverification.cpp.exe",
+            "size": 74803
+        },
+        {
+            "type": "d",
+            "name": "string",
+            "size": 1024,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "strtok_test.cpp",
+            "size": 1562
+        },
+        {
+            "type": "-",
+            "name": "strtok_test.cpp~",
+            "size": 1500
+        },
+        {
+            "type": "d",
+            "name": "test",
+            "size": 96,
+            "files": []
+        },
+        {
+            "type": "-",
+            "name": "test_queue.cpp",
+            "size": 1584
+        },
+        {
+            "type": "-",
+            "name": "test_queue.cpp.exe",
+            "size": 76573
+        },
+        {
+            "type": "-",
+            "name": "test_string_class.cpp",
+            "size": 3492
+        },
+        {
+            "type": "-",
+            "name": "test_string_class.cpp.exe",
+            "size": 96948
+        },
+        {
+            "type": "-",
+            "name": "thig",
+            "size": 8225
+        },
+        {
+            "type": "-",
+            "name": "thig.c",
+            "size": 6975
+        },
+        {
+            "type": "-",
+            "name": "thig.c.exe",
+            "size": 66656
+        },
+        {
+            "type": "-",
+            "name": "tips.txt",
+            "size": 23
+        },
+        {
+            "type": "-",
+            "name": "variable_parameters.cpp",
+            "size": 224
+        },
+        {
+            "type": "-",
+            "name": "variable_parameters.txt",
+            "size": 1864
+        },
+        {
+            "type": "d",
+            "name": "VirtualFunctionTable",
+            "size": 1024,
+            "files": []
+        }
+    ]
+}
