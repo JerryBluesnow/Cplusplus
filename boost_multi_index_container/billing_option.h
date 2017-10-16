@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+typedef enum {
+    BILLING_OPTION_NONE = 0,
+    BILLING_OPTION_RF,
+    BILLING_OPTION_ICCF,
+    BILLING_OPTION_MAX
+} BILLING_OPTIONS;
+
+const char * billing_option_string[BILLING_OPTION_MAX+1] = {
+    "BILLING_OPTION_NONE",
+    "BILLING_OPTION_RF",
+    "BILLING_OPTION_ICCF",
+    "BILLING_OPTION_MAX"
+};

@@ -10,6 +10,7 @@
 using namespace std;
 using namespace boost::multi_index;
 using boost::multi_index_container;
+
 // define multiple index
 typedef struct MyIndex
 {
@@ -17,6 +18,11 @@ typedef struct MyIndex
     int y;
     int z;
     MyIndex(int ax = 0, int ay = 0, int az = 0) : x(ax), y(ay), z(az) {}
+    void
+    print(char *prompt) const
+    {
+        cout << "(" << x << ", " << y << ", " << z << ") - " << prompt << endl;
+    }
 } MyIndex;
 
 // define data to be indexed
@@ -43,10 +49,10 @@ class MyTest
         myData.b  = b;
     }
 
-    ~MyTest(){};
-
+    ~MyTest() { print(", destructed"); }
+    
     void
-    print(const char *prompt) const
+    print( const char *prompt = "") const
     {
         cout << "(" << myIndex.x << ", " << myIndex.y << ", " << myIndex.z << ") - ";
         cout << "(" << myData.a << ", " << myData.b << ")" << prompt << endl;
@@ -70,7 +76,76 @@ typedef multi_index_container<
 typedef MyContainer_T::index<MyIndexTag>::type           MyContainerIndex_T;
 typedef MyContainer_T::index<MyIndexTag>::type::iterator MyContainerIterator_T;
 typedef std::pair<MyContainerIterator_T, bool> MyContainerPair_T;
-// define operator< of index for this container
+
+// a template class
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+class MyContainer
+{
+    MultiIndexContainer_T theContainer;
+
+   public:
+    void
+    insert(Data_T *data);
+    void
+    find(const Index_T &index);
+    void
+    print();
+    void
+    free();
+};
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::insert(Data_T *data)
+{
+    theContainer.insert(data);
+}
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &index)
+{
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
+        get<Tag_T>(theContainer);
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type::iterator iter =
+        indexSet.find(index);
+    if (indexSet.end() == iter)
+    {
+        index.print(const_cast<char*>("not found"));
+        return;
+    }
+    (*iter)->print(", found");
+}
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::print()
+{
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
+        get<Tag_T>(theContainer);
+    typedef typename MultiIndexContainer_T::value_type value_type;
+    std::copy(indexSet.begin(), indexSet.end(), std::ostream_iterator<value_type>(cout));
+}
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::free()
+{
+    typedef typename MultiIndexContainer_T::value_type value_type;
+    while (!theContainer.empty())
+    {
+        typename MultiIndexContainer_T::iterator iter = theContainer.begin();
+        if (NULL == (*iter))
+        {
+            theContainer.erase(iter);
+            continue;
+        }
+        value_type pobj = *iter;
+        theContainer.erase(iter);
+        delete pobj;
+    }
+}
+
 bool
 operator<(const MyIndex &lhs, const MyIndex &rhs)
 {
@@ -86,79 +161,19 @@ operator<(const MyIndex &lhs, const MyIndex &rhs)
         return true;
     else if (lhs.z > rhs.z)
         return false;
-}
-
-// define a global container
-MyContainer_T mycontainer;
-
-// print the container
-void
-print_container1()
-{
-    MyContainerIndex_T &                   indexSet = mycontainer.get<MyIndexTag>();
-    typedef MyContainerIndex_T::value_type value_type;
-    std::copy(indexSet.begin(), indexSet.end(), std::ostream_iterator<value_type>(cout));
-}
-
-// print the container
-void
-print_container2()
-{
-    MyContainerIndex_T &  indexSet = mycontainer.get<MyIndexTag>();
-    MyContainerIterator_T iter     = indexSet.begin();
-    while (iter != indexSet.end())
-    {
-        (*iter)->print("");
-        ++iter;
-    }
+    else
+        return false;
 }
 
 std::ostream &
 operator<<(std::ostream &os, const MyTest *mytest)
 {
-    // mytest->print("");  //this clause can work
-    os << "(" << mytest->myIndex.x << ", " << mytest->myIndex.y << ", " << mytest->myIndex.z
-       << ") - ";
-    os << "(" << mytest->myData.a << ", " << mytest->myData.b << ")" << endl;
+    mytest->print();
     return os;
 }
 
-// find an element in the container
-void
-find(int x, int y, int z)
-{
-    MyContainerIndex_T &indexSet = mycontainer.get<MyIndexTag>();
-    // or
-    // const boost::multi_index::index<MyContainer_T, MyIndexTag>::type& indexSet =
-    // get<MyIndexTag>(mycontainer);
-    MyContainerIterator_T iter = indexSet.find(MyIndex(x, y, z));
-    if (indexSet.end() == iter)
-    {
-        cout << "(" << x << ", " << y << ", " << z << ") - not found" << endl;
-        return;
-    }
-    (*iter)->print(", found");
-}
-
-// find an element in the container, the efficiency is very low
-void
-find2(int x, int y, int z)
-{
-    MyContainerIndex_T &  indexSet = mycontainer.get<MyIndexTag>();
-    MyContainerIterator_T iter     = indexSet.begin();
-    while (iter != indexSet.end())
-    {
-        MyIndex index = (*iter)->myIndex;
-        if (index.x == x && index.y == y && index.z == z)
-        {
-            (*iter)->print(", found");
-            return;
-        }
-        ++iter;
-    }
-    cout << "(" << x << ", " << y << ", " << z << ") - not found" << endl;
-}
-
+// instantiate a instance for this template class
+MyContainer<MyContainer_T, MyIndexTag, MyTest, MyIndex> mycontainer;
 void
 test1()
 {
@@ -228,47 +243,24 @@ test6()
 void
 test_find()
 {
-    find(1, 1, 1);
-    find(1, 1, 2);
-    find(1, 1, 3);
-    find(1, 2, 1);
-    find(1, 2, 2);
-    find(1, 2, 3);
-    find(1, 3, 1);
-    find(1, 3, 2);
-    find(1, 3, 3);
-    find(2, 1, 1);
-    find(2, 1, 2);
-    find(2, 1, 3);
-    find(2, 2, 1);
-    find(2, 2, 2);
-    find(2, 2, 3);
-    find(2, 3, 1);
-    find(2, 3, 2);
-    find(2, 3, 3);
-}
-
-void
-test_find2()
-{
-    find2(1, 1, 1);
-    find2(1, 1, 2);
-    find2(1, 1, 3);
-    find2(1, 2, 1);
-    find2(1, 2, 2);
-    find2(1, 2, 3);
-    find2(1, 3, 1);
-    find2(1, 3, 2);
-    find2(1, 3, 3);
-    find2(2, 1, 1);
-    find2(2, 1, 2);
-    find2(2, 1, 3);
-    find2(2, 2, 1);
-    find2(2, 2, 2);
-    find2(2, 2, 3);
-    find2(2, 3, 1);
-    find2(2, 3, 2);
-    find2(2, 3, 3);
+    mycontainer.find(MyIndex(1, 1, 1));
+    mycontainer.find(MyIndex(1, 1, 2));
+    mycontainer.find(MyIndex(1, 1, 3));
+    mycontainer.find(MyIndex(1, 2, 1));
+    mycontainer.find(MyIndex(1, 2, 2));
+    mycontainer.find(MyIndex(1, 2, 3));
+    mycontainer.find(MyIndex(1, 3, 1));
+    mycontainer.find(MyIndex(1, 3, 2));
+    mycontainer.find(MyIndex(1, 3, 3));
+    mycontainer.find(MyIndex(2, 1, 1));
+    mycontainer.find(MyIndex(2, 1, 2));
+    mycontainer.find(MyIndex(2, 1, 3));
+    mycontainer.find(MyIndex(2, 2, 1));
+    mycontainer.find(MyIndex(2, 2, 2));
+    mycontainer.find(MyIndex(2, 2, 3));
+    mycontainer.find(MyIndex(2, 3, 1));
+    mycontainer.find(MyIndex(2, 3, 2));
+    mycontainer.find(MyIndex(2, 3, 3));
 }
 
 int
@@ -280,12 +272,11 @@ main()
     test1();
     test3();
     test5();
-    print_container1();
-    cout << endl;
-    print_container2();
+    mycontainer.print();
     cout << endl;
     test_find();
     cout << endl;
-    test_find2();
+    mycontainer.free();
+    system("pause");
     return 0;
 }
