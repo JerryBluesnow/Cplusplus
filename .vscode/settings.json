@@ -2,6 +2,9 @@
     "files.associations": {
         "encription.c": "cpp",
         "funcion.c": "cpp",
-        "thig.c": "cpp"
+        "thig.c": "cpp",
+        "*.ipp": "cpp",
+        "climits": "cpp",
+        "ctime": "cpp"
     }
 }

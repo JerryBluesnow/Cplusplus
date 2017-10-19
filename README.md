@@ -22,6 +22,6 @@
     You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
 
 ## proxy
-git config –global http.proxy http://135.245.48.34:8000
+git config --global http.proxy http://135.245.48.34:8000
 
-
+git config --get --global http.proxy

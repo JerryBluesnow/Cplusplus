@@ -77,7 +77,7 @@ string_find_value(std::string source_str, std::string key_str, int separator_cnt
 
     va_start(arg_ptr, separator_cnt);
 
-    trim(source_str);
+    //trim(source_str);
 
     std::string::size_type pos_key = source_str.find(key_str);
     if (pos_key == std::string::npos)
@@ -132,7 +132,7 @@ main()
     }
 
     string usename =
-        string_find_value("", key_URI_type_str, 5, '>', ' ', '@', ';', '\0');
+        string_find_value(chargeInfo_string, key_URI_type_str, 5, '>', ' ', '@', ';', '\0');
     if (usename[0] == '+')
     {
         usename.erase(0, 2);
@@ -144,6 +144,10 @@ main()
     }
 
     cout << ":  user_name's text:" << endl;
+
+    char *null_Ptr = NULL;
+    *null_Ptr      = 0;
+    system("pause");
 
     return 0;
 }
