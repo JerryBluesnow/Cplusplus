@@ -6,7 +6,6 @@
 #include "boost/multi_index_container.hpp"
 #include "boost/multi_index/member.hpp"
 #include "boost/multi_index/ordered_index.hpp"
-
 using namespace std;
 using namespace boost::multi_index;
 using boost::multi_index_container;
@@ -30,23 +29,21 @@ typedef struct
 {
     int a;
     int b;
-} MyData;
-
-// define object to be indexed
+}MyData;
+//define object to be indexed
 class MyTest
 {
-   public:
+public:
     MyIndex myIndex;
     MyData  myData;
-
-   public:
+public:
     MyTest(int x, int y, int z, int a, int b)
     {
         myIndex.x = x;
         myIndex.y = y;
         myIndex.z = z;
-        myData.a  = a;
-        myData.b  = b;
+        myData.a = a;
+        myData.b = b;
     }
 
     ~MyTest() { print(", destructed"); }
@@ -57,23 +54,19 @@ class MyTest
         cout << "(" << myIndex.x << ", " << myIndex.y << ", " << myIndex.z << ") - ";
         cout << "(" << myData.a << ", " << myData.b << ")" << prompt << endl;
     }
-
-   private:
-    MyTest(const MyTest &);
-    MyTest &
-    operator=(const MyTest &);
+private:
+    MyTest(const MyTest&);
+    MyTest& operator= (const MyTest&);
 };
-
-// define index tag, multi_index_container, and its type
-struct MyIndexTag
-{
-};
-
+//define index tag, multi_index_container, and its type
+struct MyIndexTag{};
 typedef multi_index_container<
-    MyTest *,
-    indexed_by<ordered_unique<tag<MyIndexTag>, member<MyTest, MyIndex, &MyTest::myIndex> > > >
-                                                         MyContainer_T;
-typedef MyContainer_T::index<MyIndexTag>::type           MyContainerIndex_T;
+    MyTest*,
+    indexed_by<
+        ordered_unique<
+            tag<MyIndexTag>,  member<MyTest, MyIndex, &MyTest::myIndex> > > 
+>MyContainer_T;
+typedef MyContainer_T::index<MyIndexTag>::type MyContainerIndex_T;
 typedef MyContainer_T::index<MyIndexTag>::type::iterator MyContainerIterator_T;
 typedef std::pair<MyContainerIterator_T, bool> MyContainerPair_T;
 
@@ -177,66 +170,56 @@ MyContainer<MyContainer_T, MyIndexTag, MyTest, MyIndex> mycontainer;
 void
 test1()
 {
-    MyTest *a = new MyTest(1, 1, 1, 10, 100);
+    MyTest *a = new MyTest(1,1,1,10,100);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(1, 1, 2, 20, 200);
+    MyTest *b = new MyTest(1,1,2,20,200);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(1, 1, 3, 30, 300);
+    MyTest *c = new MyTest(1,1,3,30,300);
     mycontainer.insert(c);
 }
-
-void
-test2()
+void test2()
 {
-    MyTest *a = new MyTest(1, 2, 1, 40, 400);
+    MyTest *a = new MyTest(1,2,1,40,400);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(1, 2, 2, 50, 500);
+    MyTest *b = new MyTest(1,2,2,50,500);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(1, 2, 3, 60, 600);
+    MyTest *c = new MyTest(1,2,3,60,600);
     mycontainer.insert(c);
 }
-
-void
-test3()
+void test3()
 {
-    MyTest *a = new MyTest(1, 3, 1, 70, 700);
+    MyTest *a = new MyTest(1,3,1,70,700);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(1, 3, 2, 80, 800);
+    MyTest *b = new MyTest(1,3,2,80,800);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(1, 3, 3, 90, 900);
+    MyTest *c = new MyTest(1,3,3,90,900);
     mycontainer.insert(c);
 }
-
-void
-test4()
+void test4()
 {
-    MyTest *a = new MyTest(2, 1, 1, 110, 1000);
+    MyTest *a = new MyTest(2,1,1,110,1000);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(2, 1, 2, 220, 2000);
+    MyTest *b = new MyTest(2,1,2,220,2000);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(2, 1, 3, 330, 3000);
+    MyTest *c = new MyTest(2,1,3,330,3000);
     mycontainer.insert(c);
 }
-
-void
-test5()
+void test5()
 {
-    MyTest *a = new MyTest(2, 2, 1, 440, 4000);
+    MyTest *a = new MyTest(2,2,1,440,4000);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(2, 2, 2, 550, 5000);
+    MyTest *b = new MyTest(2,2,2,550,5000);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(2, 2, 3, 660, 6000);
+    MyTest *c = new MyTest(2,2,3,660,6000);
     mycontainer.insert(c);
 }
-
-void
-test6()
+void test6()
 {
-    MyTest *a = new MyTest(2, 3, 1, 770, 7000);
+    MyTest *a = new MyTest(2,3,1,770,7000);
     mycontainer.insert(a);
-    MyTest *b = new MyTest(2, 3, 2, 880, 8000);
+    MyTest *b = new MyTest(2,3,2,880,8000);
     mycontainer.insert(b);
-    MyTest *c = new MyTest(2, 3, 3, 990, 9000);
+    MyTest *c = new MyTest(2,3,3,990,9000);
     mycontainer.insert(c);
 }
 
@@ -262,9 +245,7 @@ test_find()
     mycontainer.find(MyIndex(2, 3, 2));
     mycontainer.find(MyIndex(2, 3, 3));
 }
-
-int
-main()
+int main()
 {
     test2();
     test4();

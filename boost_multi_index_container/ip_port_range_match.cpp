@@ -185,9 +185,44 @@ operator<(const acl_list_address_index &lhs, const acl_list_address_index &rhs)
         return true;
     else if (lhs.ip_suffix_range.index_start > rhs.ip_suffix_range.index_start)
         return false;
+    else if (lhs.ip_suffix_range.index_end < rhs.ip_suffix_range.index_end)
+        return true;
+    else if (lhs.ip_suffix_range.index_end > rhs.ip_suffix_range.index_end)
+        return false;
     else if (lhs.port_range.index_start < rhs.port_range.index_start)
         return true;
     else if (lhs.port_range.index_start > rhs.port_range.index_start)
+        return false;
+    else if (lhs.port_range.index_end < rhs.port_range.index_end)
+        return true;
+    else if (lhs.port_range.index_end > rhs.port_range.index_end)
+        return false;
+    else
+        return false;
+}
+
+bool
+operator==(const acl_list_address_index &lhs, const acl_list_address_index &rhs)
+{
+    if (lhs.ip_prefix < rhs.ip_prefix)
+        return true;
+    else if (lhs.ip_prefix > rhs.ip_prefix)
+        return false;
+    else if (lhs.ip_suffix_range.index_start < rhs.ip_suffix_range.index_start)
+        return true;
+    else if (lhs.ip_suffix_range.index_start > rhs.ip_suffix_range.index_start)
+        return false;
+    else if (lhs.ip_suffix_range.index_end < rhs.ip_suffix_range.index_end)
+        return true;
+    else if (lhs.ip_suffix_range.index_end > rhs.ip_suffix_range.index_end)
+        return false;
+    else if (lhs.port_range.index_start < rhs.port_range.index_start)
+        return true;
+    else if (lhs.port_range.index_start > rhs.port_range.index_start)
+        return false;
+    else if (lhs.port_range.index_end < rhs.port_range.index_end)
+        return true;
+    else if (lhs.port_range.index_end > rhs.port_range.index_end)
         return false;
     else
         return false;
@@ -370,7 +405,7 @@ main()
                         acl_list_attributes());
     mycontainer.insert(a);
 
-    mycontainer.find(acl_list_address_index(172018000,  range_index(2, 2), range_index(1230, 1240)));
+    mycontainer.find(acl_list_address_index(172018000,  range_index(1, 1), range_index(1230, 1240)));
 
     // cout << endl;
     // mycontainer.free();
