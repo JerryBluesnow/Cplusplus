@@ -152,6 +152,7 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 ==
 class acl_list_address_index
 {
    public:
+    unsigned int id;
     unsigned int ip_prefix;
     range_index  ip_suffix_range;
     range_index  port_range;
@@ -196,7 +197,6 @@ class acl_list_attributes
 class acl_list_db
 {
    public:
-   unsigned int id;
     acl_list_address_index myIndex;
     acl_list_attributes    myData;
 
@@ -237,9 +237,7 @@ struct MyIndexTag
 
 typedef multi_index_container<
     acl_list_db *,
-    indexed_by<
-    ordered_non_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> > >,
-    ordered_unique<tag<MyIndexTag>, member<acl_list_db, unsigned int, &acl_list_db::id> > >
+    indexed_by<ordered_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> > > >
                                                          MyContainer_T;
 typedef MyContainer_T::index<MyIndexTag>::type           MyContainerIndex_T;
 typedef MyContainer_T::index<MyIndexTag>::type::iterator MyContainerIterator_T;
