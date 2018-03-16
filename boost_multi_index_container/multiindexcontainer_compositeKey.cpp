@@ -305,6 +305,9 @@ query_test()
 int
 main()
 {
+    cout << sizeof(MyTest) << endl;
+    system("pause");
+    return 0;
     test2();
     test4();
     test6();

@@ -74,6 +74,15 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 ==
         }
     }
 
+    if (obj.index_start == obj.index_end)
+    {
+        if ((obj.index_start >= lhs.index_start) && (obj.index_end <= lhs.index_end))
+        {
+            cout << __FUNCTION__ <<" equal " <<endl;
+            return (false);
+        }
+    }
+
     if (lhs.index_start > obj.index_start)
     {
         return (false);
@@ -111,6 +120,15 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 ==
     if (lhs.index_start == lhs.index_end)
     {
         if ((lhs.index_start >= obj.index_start) && (lhs.index_end <= obj.index_end))
+        {
+            cout << __FUNCTION__ <<" equal " <<endl;
+            return (false);
+        }
+    }
+
+    if (obj.index_start == obj.index_end)
+    {
+        if ((obj.index_start >= lhs.index_start) && (obj.index_end <= lhs.index_end))
         {
             cout << __FUNCTION__ <<" equal " <<endl;
             return (false);
@@ -196,16 +214,18 @@ class acl_list_attributes
 class acl_list_db
 {
    public:
+    unsigned int           id;
     acl_list_address_index myIndex;
     acl_list_attributes    myData;
 
    public:
-    acl_list_db(unsigned int ip_pre, range_index ip_suf_rang, range_index port_rang, acl_list_attributes acl_list_attr)
+    acl_list_db(unsigned int ip_pre, range_index ip_suf_rang, range_index port_rang, acl_list_attributes acl_list_attr, unsigned int _id)
     {
         myIndex.ip_prefix = ip_pre;
         myIndex.ip_suffix_range = ip_suf_rang;
         myIndex.port_range      = port_rang;
         myData                  = acl_list_attr;
+        id                      = _id;
     }
 
     ~acl_list_db() { print(", destructed"); }
@@ -234,16 +254,23 @@ struct MyIndexTag
 {
 };
 
+struct MyIndexXYTag
+{
+};
+
 typedef multi_index_container<
     acl_list_db *,
-    indexed_by<ordered_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> > > >
-                                                         MyContainer_T;
+    indexed_by<
+        ordered_non_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> >,
+        ordered_unique<tag<MyIndexXYTag>, member<acl_list_db, unsigned int, acl_item_id> > 
+        > 
+    >MyContainer_T;
 typedef MyContainer_T::index<MyIndexTag>::type           MyContainerIndex_T;
 typedef MyContainer_T::index<MyIndexTag>::type::iterator MyContainerIterator_T;
 typedef std::pair<MyContainerIterator_T, bool> MyContainerPair_T;
 
 // a template class
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 class MyContainer
 {
     MultiIndexContainer_T theContainer;
@@ -253,22 +280,24 @@ class MyContainer
     insert(Data_T *data);
     void
     find(const Index_T &index);
+    find(const Index_T &index, const Index_XY_T &index_xy);
     void
     print();
     void
     free();
     void
     erase(const Index_T &index);
+    erase(const Index_T &index, const Index_XY_T &index_xy);
 };
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::insert(Data_T *data)
 {
     theContainer.insert(data);
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &index)
 {
@@ -284,7 +313,23 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &
     (*iter)->print(", found");
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &index, const Index_XY_T &index_xy)
+{
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
+        get<Tag_T>(theContainer);
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type::iterator iter =
+        indexSet.find(index);
+    if (indexSet.end() == iter)
+    {
+        index.print(const_cast<char*>("not found"));
+        return;
+    }
+    (*iter)->print(", found");
+}
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::print()
 {
@@ -294,7 +339,7 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::print()
     std::copy(indexSet.begin(), indexSet.end(), std::ostream_iterator<value_type>(cout));
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::free()
 {
@@ -313,9 +358,9 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::free()
     }
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
-MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::erase(const Index_T &index)
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::erase(const Index_T &index, const Index_XY_T &index_xy)
 {
     const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
         get<Tag_T>(theContainer);
@@ -557,9 +602,10 @@ main()
 
     mycontainer.print();
 
-    mycontainer.erase(acl_list_address_index(172018000, range_index(0,3),range_index(1250,1255)));
+    mycontainer.erase(acl_list_address_index(172018000, range_index(1,1),range_index(1250,1250)));
 
     mycontainer.print();
+
     // cout << endl;
     // mycontainer.free();
     system("pause");

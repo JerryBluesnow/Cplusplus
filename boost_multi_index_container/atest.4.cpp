@@ -1,3 +1,54 @@
+#include <iostream>
+using namespace std;  
+
+inline ostream & operator << (ostream &output, IP_ADDRESS_TYPE &data){
+                output << (int)data;
+                return output;
+}
+
+inline ostream & operator << (ostream &output, DM_V4V6IPADDRESS &data){
+                output << "ip_type is "<<(int)data.ip_type << endl;
+                output << "ip_addr is [";
+                for(int i =0; i< MAX_IPv6_ADDR_LEN; i++){
+                        output<< hex << (int)data.addr[i]<<dec <<":";
+                }
+		output<<"]"<<endl;
+                return output;
+}
+
+inline bool isZero( DM_V4V6IPADDRESS &c1)
+{
+	for(int i = MAX_IPv6_ADDR_LEN - sizeof(unsigned int); i >=0; i-=sizeof(unsigned int)){
+		if(*(unsigned int*)&c1.addr[i] != 0) return false;
+	}
+	return true;
+}
+
+
+inline int IPcompare( DM_V4V6IPADDRESS &c1, DM_V4V6IPADDRESS &c2)
+{
+	// IPv4 < IPv6
+	if(c1.ip_type < c2.ip_type) return -1;
+	if(c1.ip_type > c2.ip_type) return 1;
+
+	return memcmp(c1.addr, c2.addr, MAX_IPv6_ADDR_LEN);;
+}
+
+inline bool operator ==( DM_V4V6IPADDRESS &c1,DM_V4V6IPADDRESS &c2)
+{
+        return IPcompare(c1, c2) == 0;
+}
+
+inline bool operator >( DM_V4V6IPADDRESS &c1,DM_V4V6IPADDRESS &c2)
+{
+        return IPcompare(c1, c2) > 0;
+}
+
+inline bool operator <( DM_V4V6IPADDRESS &c1,DM_V4V6IPADDRESS &c2)
+{
+	return IPcompare(c1, c2) < 0;
+}
+
 struct IMS_ACL_RANGE_KEY: public IMSDC_KEY_BASE
 {
 	USHORT acl_table_id;
@@ -46,150 +97,152 @@ struct IMS_ACL_RANGE_KEY: public IMSDC_KEY_BASE
 		return true;
 	}
 
-	struct key_compare
-	{
-		bool operator()(IMS_ACL_RANGE_KEY s1, IMS_ACL_RANGE_KEY s2) const
-		{
-			if (s1.acl_table_id < s2.acl_table_id)
-			{
-				return true;
-			}
-			else if (s1.acl_table_id > s2.acl_table_id)
-			{
-				return false;
-			}
-			else
-			{
-				if (isZero(*s2.ip_addr_high) && s2.port_high == 0)
-				{
-					// Find single transport
-					if (*s1.ip_addr_high < *s2.ip_addr_low)
-					{
-						return true;
-					}
-					else
-					{
-						// Check the port range
-						if (s1.port_high < s2.port_low)
-						{
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}
-				}
+  struct key_compare
+  {
+      bool
+      operator()(IMS_ACL_RANGE_KEY s1, IMS_ACL_RANGE_KEY s2) const
+      {
+          if (s1.acl_table_id < s2.acl_table_id)
+          {
+              return true;
+          }
 
-				if ((isZero(*s1.ip_addr_high)) && (s1.port_high == 0))
-				{
-					// Find single transport
-					if (*s1.ip_addr_low < *s2.ip_addr_low)
-					{
-						return true;
-					}
-					else
-					{
-						if (s1.port_low < s2.port_low)
-						{
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}
-				}
+          if (s1.acl_table_id > s2.acl_table_id)
+          {
+              return false;
+          }
 
-				if (*s1.ip_addr_low < *s2.ip_addr_low)
-				{
-					if (!(*s1.ip_addr_high > *s2.ip_addr_high))
-					{
-						return true;
-					}
-					else
-					{
-						// Report error
-						IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
-						s1.dump();
-						s2.dump();
-						return false;
-					}
-				}
-				else if (*s1.ip_addr_low > *s2.ip_addr_low)
-				{
-					if (!(*s1.ip_addr_high < *s2.ip_addr_high))
-					{
-						return false;
-					}
-					else
-					{
-						// Report error
-						IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
-						s1.dump();
-						s2.dump();
-						return false;
-					}
-				}
-				else
-				{
-					if (*s1.ip_addr_high < *s2.ip_addr_high)
-					{
-						return true;
-					}
-					else if (*s1.ip_addr_high > *s2.ip_addr_high)
-					{
-						return false;
-					}
-					else
-					{
-						if (s1.port_low < s2.port_low)
-						{
-							if (!(s1.port_high > s2.port_high))
-							{
-								return true;
-							}
-							else
-							{
-								// Report error
-								IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
-								s1.dump();
-								s2.dump();
-								return false;
-							}
-						}
-						else if (s1.port_low > s2.port_low)
-						{
-							if (!(s1.port_high < s2.port_high))
-							{
-								return false;
-							}
-							else
-							{
-								// Report error
-								IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
-								s1.dump();
-								s2.dump();
-								return false;
-							}
-						}
-						else
-						{
-							// Report error
-							if (s1.port_high < s2.port_high)
-							{
-								return true;
-							}
-							else if (s1.port_high > s2.port_high)
-							{
-								return false;
-							}
-							else
-							{
-								return false;
-							}
-						}
-					}
-				}
-			}
-		}
+		  // when 
+          if (isZero(*s2.ip_addr_high) && s2.port_high == 0)
+          {
+              // Find single transport
+              if (*s1.ip_addr_high < *s2.ip_addr_low)
+              {
+                  return true;
+              }
+              else
+              {
+                  // Check the port range
+                  if (s1.port_high < s2.port_low)
+                  {
+                      return true;
+                  }
+                  else
+                  {
+                      return false;
+                  }
+              }
+          }
+
+          if ((isZero(*s1.ip_addr_high)) && (s1.port_high == 0))
+          {
+              // Find single transport
+              if (*s1.ip_addr_low < *s2.ip_addr_low)
+              {
+                  return true;
+              }
+              else
+              {
+                  if (s1.port_low < s2.port_low)
+                  {
+                      return true;
+                  }
+                  else
+                  {
+                      return false;
+                  }
+              }
+          }
+
+          if (*s1.ip_addr_low < *s2.ip_addr_low)
+          {
+              if (!(*s1.ip_addr_high > *s2.ip_addr_high))
+              {
+                  return true;
+              }
+              else
+              {
+                  // Report error
+                  IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
+                  s1.dump();
+                  s2.dump();
+                  return false;
+              }
+          }
+          else if (*s1.ip_addr_low > *s2.ip_addr_low)
+          {
+              if (!(*s1.ip_addr_high < *s2.ip_addr_high))
+              {
+                  return false;
+              }
+              else
+              {
+                  // Report error
+                  IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
+                  s1.dump();
+                  s2.dump();
+                  return false;
+              }
+          }
+          else
+          {
+              if (*s1.ip_addr_high < *s2.ip_addr_high)
+              {
+                  return true;
+              }
+              else if (*s1.ip_addr_high > *s2.ip_addr_high)
+              {
+                  return false;
+              }
+              else
+              {
+                  if (s1.port_low < s2.port_low)
+                  {
+                      if (!(s1.port_high > s2.port_high))
+                      {
+                          return true;
+                      }
+                      else
+                      {
+                          // Report error
+                          IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
+                          s1.dump();
+                          s2.dump();
+                          return false;
+                      }
+                  }
+                  else if (s1.port_low > s2.port_low)
+                  {
+                      if (!(s1.port_high < s2.port_high))
+                      {
+                          return false;
+                      }
+                      else
+                      {
+                          // Report error
+                          IMS_DLOG(IMS_LOGHIGH, "ip range conflict!");
+                          s1.dump();
+                          s2.dump();
+                          return false;
+                      }
+                  }
+                  else
+                  {
+                      // Report error
+                      if (s1.port_high < s2.port_high)
+                      {
+                          return true;
+                      }
+                      else if (s1.port_high > s2.port_high)
+                      {
+                          return false;
+                      }
+                      else
+                      {
+                          return false;
+                      }
+                  }
+              }
+          }
+      }
+  };
