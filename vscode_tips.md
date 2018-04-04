@@ -1,6 +1,6 @@
 
 # This is for making down working tips for visual studio code(vscode)
-
+https://blog.csdn.net/bat67/article/details/76095813
 ## Files->Preferences->settings:
     // Place your settings in this file to overwrite the default settings
     {
