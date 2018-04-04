@@ -532,27 +532,32 @@ int main()
 {
 
 using namespace boost::lambda;
-typedef multi_index_container<double> double_set;
+typedef multi_index_container<double, double> double_set;
 // note: default template parameters resolve to
 // multi_index_container<double,indexed_by<unique<identity<double> > > >.
 
-// double_set s;
+double_set s;
 
-// s.insert(99);
-// s.insert(100);
-// s.insert(106);
-// s.insert(110);
-// s.insert(140);
-// s.insert(190);
-// s.insert(200);
-// s.insert(200.01);
+// s.insert(99, 120);
+// s.insert(100, 120);
+// s.insert(106, 120);
+// s.insert(110, 120);
+// s.insert(140, 120);
+// s.insert(190, 120);
+// s.insert(200, 120);
+// s.insert(200.01, 120);
 
-std::pair<MyContainer_T,MyContainer_T> 
-p=
-acl->range(100.0<=boost::lambda::_1,boost::lambda::_1<=200); // 100<= x <=200
+// std::pair<double_set::iterator,double_set::iterator> p=
+// s.range(100.0<=boost::lambda::_1,boost::lambda::_2<=200); // 100<= x <=200
 
 // for_each(p.first, p.second, std::cout << boost::lambda::_1 << ' ');
 
+// https://blog.csdn.net/playboy1/article/details/7568703
+// https://www.boost.org/doc/libs/1_64_0/libs/multi_index/doc/tutorial/basics.html#range
+// https://blog.csdn.net/lee353086/article/details/40706669
+// https://www.boost.org/doc/libs/1_55_0/libs/multi_index/doc/index.html
+// https://blog.csdn.net/lsjseu/article/details/43370707
+// https://blog.csdn.net/gongxinheng/article/details/5421914
 return 0;
 // range [it0,it1) contains the elements in [100,200]
 
