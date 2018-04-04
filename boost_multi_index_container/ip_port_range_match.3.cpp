@@ -61,19 +61,6 @@ operator==(const range_index &lhs, const range_index &obj)  //重载 ==
 bool
 operator<(const range_index &lhs, const range_index &obj)  //重载 ==
 {
-    if ((lhs.index_start == obj.index_start) && (lhs.index_end == obj.index_end))
-    {
-        return (false);
-    }
-
-    if (lhs.index_start == lhs.index_end)
-    {
-        if ((lhs.index_start>=obj.index_start) && (lhs.index_end<=obj.index_end))
-        {
-            return (false);
-        }
-    }
-
     if (lhs.index_start > obj.index_start)
     {
         return (false);
@@ -103,30 +90,14 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 ==
 bool
 operator>(const range_index &lhs, const range_index &obj)  //重载 ==
 {
-    if ((lhs.index_start == obj.index_start) && (lhs.index_end == obj.index_end))
-    {
-        return (false);
-    }
-
-    if (lhs.index_start == lhs.index_end)
-    {
-        if ((lhs.index_start >= obj.index_start) && (lhs.index_end <= obj.index_end))
-        {
-            cout << __FUNCTION__ <<" equal " <<endl;
-            return (false);
-        }
-    }
-
     if (lhs.index_start < obj.index_start)
     {
-        cout << __FUNCTION__ <<" less than " <<endl;
         return (false);
     }
 
     // (0, 10) < (1,2), (0, 2) < (1,2), (1,1)<(2,2), (1,1)<(2,3)
     if (lhs.index_start > obj.index_start)
     {
-        cout << __FUNCTION__ <<" bigger than " <<endl;
         return (true);
     }
 
@@ -134,17 +105,13 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 ==
     // (1,1) > (0,2)
     if (lhs.index_end < obj.index_end)
     {
-        cout << __FUNCTION__ <<" less than " <<endl;
         return (false);
     }
 
     if (lhs.index_end > obj.index_end)
     {
-        cout << __FUNCTION__ <<" bigger than " <<endl;
         return (true);
     }
-        
-    cout << __FUNCTION__ <<" equal " <<endl;
 
     return (false);
 }

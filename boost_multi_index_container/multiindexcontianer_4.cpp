@@ -1,112 +1,25 @@
 /**
- * boost multi index container test
+ * boost multi index container m_index
  * platform: win32, visual studio 2005/2010; Linux, gcc4.1.2
  */
 #include <iostream>
+#include <windows.h>
+
 #include "boost/multi_index_container.hpp"
 #include "boost/multi_index/member.hpp"
 #include "boost/multi_index/ordered_index.hpp"
 #include "billing_option.h"
+
 #include "monitor_timer.h"
-#include <windows.h>
 
 using namespace std;
 using namespace boost::multi_index;
 using boost::multi_index_container;
 
-// define multiple index
-typedef struct Data_Index
-{
-    int index1;
-    int index2;
-    int index3;
-    int index4;
-
-    Data_Index(int ax = 0, int ay = 0, int az = 0, int at = 0)
-        : index1(ax), index2(ay), index3(az), index4(at)
-    {
-
-    }
-
-    void
-    print(const char *prompt) const
-    {
-        cout << "(" << index1 << ", " << index2 << ", " << index3 << ", " << index4 << ") - "
-             << prompt << endl;
-    }
-
-} Data_Index;
-
-#define BILLING_ADDRESS_LENGTH_MAX (128+1)
-
-// define data to be indexed
-typedef struct MultiContainerData
-{
-    BILLING_OPTIONS billing_option;
-    char            billing_address[BILLING_ADDRESS_LENGTH_MAX];
-    char            billing_address_backup[BILLING_ADDRESS_LENGTH_MAX];
-    MultiContainerData_init()
-    {
-        billing_option = BILLING_OPTION_NONE;
-        memset(&billing_address, 0, BILLING_ADDRESS_LENGTH_MAX);
-        memset(&billing_address_backup, 0, BILLING_ADDRESS_LENGTH_MAX);
-    };
-} MultiContainerData;
-
-// define object to be indexed
-class DB_Indexed
-{
-public:
-    Data_Index         test;
-    MultiContainerData m_data;
-
-public:
-    DB_Indexed(int index1, int index2, int index3, int index4, BILLING_OPTIONS bill_op, const char*bill_addr, const char *bill_addr_bk)
-    {
-        test.index1 = index1;
-        test.index2 = index2;
-        test.index3 = index3;
-        test.index4 = index4;
-
-        m_data.billing_option = bill_op;
-        if (bill_addr != NULL)
-        {
-            strncpy(m_data.billing_address, bill_addr, BILLING_ADDRESS_LENGTH_MAX - 1);
-        }
-
-        if (bill_addr_bk != NULL)
-        {
-            strncpy(m_data.billing_address_backup, bill_addr_bk, BILLING_ADDRESS_LENGTH_MAX - 1);
-        }
-    }
-
-    ~DB_Indexed() { print(", destructed"); }
-
-    void
-    print(const char *prompt = "") const
-    {
-        cout << "(" << test.index1 << ", " << test.index2 << ", " << test.index3 << ", "
-             << test.index4 << ") - ";
-        cout << "(" << billing_option_string[m_data.billing_option] << ", " << m_data.billing_address << ", " << m_data.billing_address_backup << ")" << prompt << endl;
-    }
-
-private:
-    DB_Indexed(const DB_Indexed &);
-    DB_Indexed &
-    operator=(const DB_Indexed &);
-
-};
-
-// define index tag, multi_index_container, and its type
-struct DB_Index_Tag
-{
-
-};
-
 typedef multi_index_container<
     DB_Indexed *,
     indexed_by<
-        ordered_unique<tag<DB_Index_Tag>, member<DB_Indexed, Data_Index, &DB_Indexed::test> > > >
+        ordered_unique<tag<DB_Index_Tag>, member<DB_Indexed, Data_Index, &DB_Indexed::m_index> > > >
                                                            MyContainer_T;
 typedef MyContainer_T::index<DB_Index_Tag>::type           MyContainerIndex_T;
 typedef MyContainer_T::index<DB_Index_Tag>::type::iterator MyContainerIterator_T;
@@ -255,6 +168,8 @@ operator<<(std::ostream &os, const DB_Indexed *mytest)
     return os;
 }
 
+
+
 // instantiate a instance for this template class
 DBContainer<MyContainer_T, DB_Index_Tag, DB_Indexed, Data_Index> mycontainer;
 void
@@ -391,7 +306,7 @@ test_insert_multiindexcontainer(int count_max)
                 {
                     break;
                 }
-                for (int tg_id2 = 0; tg_id2 <= 20; tg_id2++)
+                for (int tg_id2 = 10; tg_id2 <= 20; tg_id2++)
                 {
                     if (count >= count_max)
                     {
@@ -425,12 +340,13 @@ test_time_find(int a, int b, int c, int d)
     DB_Indexed *found = mycontainer.find(Data_Index(a, b, c, d));
     if (found != NULL)
     {
-        cout << found->test.index1 << ", "<< found->test.index2 << ", " <<found->test.index3
-             << ", "<< found->test.index4 << ", " <<found->m_data.billing_address << endl;
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
     }
     STOP_MONITOR_TIMER();
     //system("pause");
 }
+
 
 int arrary[500][32][500][32];
 
@@ -487,6 +403,87 @@ void test_find_multiindexcontainer(int count_max)
 
 }
 
+DB_Indexed *find_best_match(int a, int b, int c, int d)
+{
+    START_MONITOR_TIMER();
+    DB_Indexed *found = NULL;
+
+    //	Ingress VN-TG(1-1, Egress VN-TG(2-1)
+    found = mycontainer.find(Data_Index(a, b, c, d));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+
+    //	Ingress VN-TG(1-0), Egress VN-TG(2-1)
+    found = mycontainer.find(Data_Index(a, 0, c, d));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", " << found->m_index.index2 << ", " << found->m_index.index3
+             << ", " << found->m_index.index4 << ", " << found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+
+    //	Ingress VN-TG(1-1), Egress VN-TG(2-0)    
+    found = mycontainer.find(Data_Index(a, b, c, 0));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+
+    //	Ingress VN-TG(0-0), Egress VN-TG(2-1)
+    found = mycontainer.find(Data_Index(0, 0, c, d));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+    //	Ingress VN-TG(1-1), Egress VN-TG(0-0)
+    found = mycontainer.find(Data_Index(a, b, 0, 0));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+    //	Ingress VN-TG(1-0), Egress VN-TG(0-0)
+    found = mycontainer.find(Data_Index(a, 0, 0, 0));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+    //	Ingress VN-TG(0-0), Egress VN-TG(2-0)
+    found = mycontainer.find(Data_Index(0, 0, c, 0));
+    if (found != NULL)
+    {
+        cout << found->m_index.index1 << ", "<< found->m_index.index2 << ", " <<found->m_index.index3
+             << ", "<< found->m_index.index4 << ", " <<found->m_data.billing_address << endl;
+        STOP_MONITOR_TIMER();
+        return (found);
+    }
+
+    //	No match
+
+    STOP_MONITOR_TIMER();
+
+    return (NULL);
+    //system("pause");
+}
+
+ 
 void free_container()
 {
     cout << "GO ON to FREE CONTAINER" << endl;
@@ -499,45 +496,58 @@ void free_container()
 int
 main()
 {
-    /*
-    test2();
-    test4();
-    test6();
-    test1();
-    test3();
-    test5();
-    mycontainer.print();
-    cout << endl;
-    test_find();
-    cout << endl;
+    mycontainer.erase(Data_Index(0, 0, 0, 0));
+    DB_Indexed *a = new DB_Indexed(1, 3, 1, 1, BILLING_OPTION_NONE, "qa25a.none.billing.com",
+                                   "qa25a.none.billingbackup.com");
+    mycontainer.insert(a);
+    a = new DB_Indexed(1, 3, 1, 1, BILLING_OPTION_NONE, "qa25a.none.billing.com",
+    "qa25a.none.billingbackup.com");
+    mycontainer.insert(a);
 
-    DB_Indexed *found = mycontainer.find(Data_Index(2, 3, 3, 1));
-    if (found != NULL)
-    {
-        cout << found->test.index1 << ", "<< found->test.index2 << ", " <<found->test.index3
-             << ", "<< found->test.index4 << ", " <<found->m_data.billing_address << endl;
-    }
-    */
-
-    test_time_array(200,20,100,10);
+    system("pause");
+    test_time_array(200, 20, 100, 10);
     test_time_array(200,20,100,10);
     test_time_array(200,20,100,10);
     test_time_array(199,20,100,10);
     test_time_array(190,20,100,10);
     
     test_insert_multiindexcontainer(10000);
+    find_best_match(1, 1, 2, 1);
 
-    test_find_multiindexcontainer(10000);
+    find_best_match(3, 4, 5, 6);
 
-    test_time_find(1, 2, 3, 4);
-    test_time_find(0, 0, 3, 4);
-    test_time_find(0, 0, 300, 4);
-    test_time_find(0, 0, 300, 4);
-    test_time_find(0, 0, 199, 32);
-    test_time_find(4, 0, 500, 0);
-    test_time_find(0, 0, 198, 4);
-    test_time_find(0, 4, 1998, 4);
+    find_best_match(1, 2, 3, 4);
 
+    find_best_match(500, 15, 20, 10);
+    find_best_match(20, 32, 500, 11);
+    find_best_match(20, 15, 500, 10);
+    find_best_match(20, 15, 500, 12);    
+    find_best_match(20, 15, 500, 15);    
+    find_best_match(20, 15, 500, 20);    
+    find_best_match(20, 15, 500, 25);    
+    find_best_match(20, 15, 500, 31);    
+    find_best_match(20, 15, 501, 20);       
+    find_best_match(20, 15, 502, 19);    
+    find_best_match(20, 15, 503, 18); 
+    find_best_match(20, 15, 502, 19);    
+    find_best_match(20, 15, 503, 18);
+    find_best_match(20, 15, 504, 19);    
+    find_best_match(20, 15, 525, 18);  
+    
+    /*
+        test_find_multiindexcontainer(10000);
+
+        test_time_find(1, 2, 3, 4);
+        test_time_find(0, 0, 3, 4);
+        test_time_find(0, 0, 300, 4);
+        test_time_find(0, 0, 300, 4);
+        test_time_find(0, 0, 199, 32);
+        test_time_find(4, 0, 500, 0);
+        test_time_find(0, 0, 198, 4);
+        test_time_find(0, 4, 1998, 4);
+    */
+    cout << "to free the container" << endl;
+    system("pause");    
     free_container();
 
     return 0;

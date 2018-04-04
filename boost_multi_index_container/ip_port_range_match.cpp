@@ -74,6 +74,18 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 ==
         }
     }
 
+<<<<<<< HEAD
+=======
+    if (obj.index_start == obj.index_end)
+    {
+        if ((obj.index_start >= lhs.index_start) && (obj.index_end <= lhs.index_end))
+        {
+            cout << __FUNCTION__ <<" equal " <<endl;
+            return (false);
+        }
+    }
+
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
     if (lhs.index_start > obj.index_start)
     {
         return (false);
@@ -117,6 +129,18 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 ==
         }
     }
 
+<<<<<<< HEAD
+=======
+    if (obj.index_start == obj.index_end)
+    {
+        if ((obj.index_start >= lhs.index_start) && (obj.index_end <= lhs.index_end))
+        {
+            cout << __FUNCTION__ <<" equal " <<endl;
+            return (false);
+        }
+    }
+
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
     if (lhs.index_start < obj.index_start)
     {
         cout << __FUNCTION__ <<" less than " <<endl;
@@ -196,17 +220,22 @@ class acl_list_attributes
 class acl_list_db
 {
    public:
+<<<<<<< HEAD
    unsigned int id;
+=======
+    unsigned int           id;
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
     acl_list_address_index myIndex;
     acl_list_attributes    myData;
 
    public:
-    acl_list_db(unsigned int ip_pre, range_index ip_suf_rang, range_index port_rang, acl_list_attributes acl_list_attr)
+    acl_list_db(unsigned int ip_pre, range_index ip_suf_rang, range_index port_rang, acl_list_attributes acl_list_attr, unsigned int _id)
     {
         myIndex.ip_prefix = ip_pre;
         myIndex.ip_suffix_range = ip_suf_rang;
         myIndex.port_range      = port_rang;
         myData                  = acl_list_attr;
+        id                      = _id;
     }
 
     ~acl_list_db() { print(", destructed"); }
@@ -235,18 +264,29 @@ struct MyIndexTag
 {
 };
 
+struct MyIndexXYTag
+{
+};
+
 typedef multi_index_container<
     acl_list_db *,
     indexed_by<
+<<<<<<< HEAD
     ordered_non_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> > >,
     ordered_unique<tag<MyIndexTag>, member<acl_list_db, unsigned int, &acl_list_db::id> > >
                                                          MyContainer_T;
+=======
+        ordered_non_unique<tag<MyIndexTag>, member<acl_list_db, acl_list_address_index, &acl_list_db::myIndex> >,
+        ordered_unique<tag<MyIndexXYTag>, member<acl_list_db, unsigned int, acl_item_id> > 
+        > 
+    >MyContainer_T;
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
 typedef MyContainer_T::index<MyIndexTag>::type           MyContainerIndex_T;
 typedef MyContainer_T::index<MyIndexTag>::type::iterator MyContainerIterator_T;
 typedef std::pair<MyContainerIterator_T, bool> MyContainerPair_T;
 
 // a template class
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 class MyContainer
 {
     MultiIndexContainer_T theContainer;
@@ -256,22 +296,27 @@ class MyContainer
     insert(Data_T *data);
     void
     find(const Index_T &index);
+    find(const Index_T &index, const Index_XY_T &index_xy);
     void
     print();
     void
     free();
     void
     erase(const Index_T &index);
+<<<<<<< HEAD
+=======
+    erase(const Index_T &index, const Index_XY_T &index_xy);
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
 };
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::insert(Data_T *data)
 {
     theContainer.insert(data);
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &index)
 {
@@ -287,7 +332,23 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &
     (*iter)->print(", found");
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::find(const Index_T &index, const Index_XY_T &index_xy)
+{
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
+        get<Tag_T>(theContainer);
+    const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type::iterator iter =
+        indexSet.find(index);
+    if (indexSet.end() == iter)
+    {
+        index.print(const_cast<char*>("not found"));
+        return;
+    }
+    (*iter)->print(", found");
+}
+
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::print()
 {
@@ -297,7 +358,7 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::print()
     std::copy(indexSet.begin(), indexSet.end(), std::ostream_iterator<value_type>(cout));
 }
 
-template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::free()
 {
@@ -316,9 +377,15 @@ MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::free()
     }
 }
 
+<<<<<<< HEAD
 template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T>
 void
 MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::erase(const Index_T &index)
+=======
+template <class MultiIndexContainer_T, class Tag_T, class Data_T, class Index_T, class Index_XY_T>
+void
+MyContainer<MultiIndexContainer_T, Tag_T, Data_T, Index_T>::erase(const Index_T &index, const Index_XY_T &index_xy)
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
 {
     const typename boost::multi_index::index<MultiIndexContainer_T, Tag_T>::type &indexSet =
         get<Tag_T>(theContainer);
@@ -554,8 +621,20 @@ main()
     mycontainer.insert(a);
  
     mycontainer.print();
+<<<<<<< HEAD
 
     mycontainer.find(acl_list_address_index(172018000,  range_index(1, 1), range_index(1255, 1255)));
+=======
+
+    mycontainer.find(acl_list_address_index(172018000,  range_index(1, 1), range_index(1255, 1255)));
+
+
+    mycontainer.print();
+
+    mycontainer.erase(acl_list_address_index(172018000, range_index(1,1),range_index(1250,1250)));
+
+    mycontainer.print();
+>>>>>>> 312c9226ca4a54424252e12840a3e71e9667f469
 
 
     mycontainer.print();
