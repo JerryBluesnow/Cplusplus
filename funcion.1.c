@@ -9,10 +9,11 @@
 
 using namespace boost::multi_index;
 
-struct X
+typedef struct
 {
-  int x,y;
-};
+  int x;
+  int y;
+}X;
 
 std::ostream& operator<<(std::ostream& os,const X& a)
 {

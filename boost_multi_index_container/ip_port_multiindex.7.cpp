@@ -9,6 +9,8 @@
 #include <boost/multi_index/ordered_index.hpp>  
 #include "../DM_V4V6IPADDRESS.h"
 
+#include <boost/lambda/lambda.hpp> 
+
 using namespace std;  
 using namespace boost::multi_index;  
 using boost::multi_index_container;  
@@ -81,14 +83,15 @@ class acl_list_address_index
     void
     print(char *prompt) const
     {
-        cout << acl_tabl_id << ", " << "(" 
-          << ip_range.index_start << ", " 
-          << ip_range.index_end << ")" << "-(" 
-          << port_range.index_start << ", " 
-          << port_range.index_end << ")"
-          << " - " 
-          << prompt 
-          << endl;
+        cout << "-----------------start---------------------------" << endl;
+        cout << acl_tabl_id << endl;
+        cout << ip_range.index_start << endl;
+        cout << ip_range.index_end << endl;
+        cout << port_range.index_start << ", " << port_range.index_end;
+        cout << " - ";
+        cout << prompt;
+        cout << endl;
+        cout << "-----------------end-----------------------------"<<endl;
     }
 
     acl_list_address_index(){};
@@ -127,7 +130,6 @@ class acl_list_db
     {
         myIndex.acl_tabl_id = tbl_id;
         myIndex.ip_range    = ip_range;
-        memcpy(&myIndex.ip_range, &ip_range, sizeof(ip_range));
         myIndex.port_range  = port_rang;
         myIndex.vlan_id     = _vlan_id;
         myData              = acl_list_attr;
@@ -168,7 +170,7 @@ typedef multi_index_container<
     acl_list_db*,  
     indexed_by<  
         ordered_non_unique<tag<Index_X_Tag>, x_key, composite_key_result_less<x_key::result_type> >,  
-        ordered_unique<tag<Index_XY_Tag>, xy_key, composite_key_result_less<xy_key::result_type> >
+        ordered_non_unique<tag<Index_XY_Tag>, xy_key, composite_key_result_less<xy_key::result_type> >
     >  
 >MyContainer_T;  
 
@@ -529,11 +531,36 @@ test_search()
 int main()  
 {
 
+using namespace boost::lambda;
+typedef multi_index_container<double> double_set;
+// note: default template parameters resolve to
+// multi_index_container<double,indexed_by<unique<identity<double> > > >.
+
+// double_set s;
+
+// s.insert(99);
+// s.insert(100);
+// s.insert(106);
+// s.insert(110);
+// s.insert(140);
+// s.insert(190);
+// s.insert(200);
+// s.insert(200.01);
+
+std::pair<MyContainer_T,MyContainer_T> 
+p=
+acl->range(100.0<=boost::lambda::_1,boost::lambda::_1<=200); // 100<= x <=200
+
+// for_each(p.first, p.second, std::cout << boost::lambda::_1 << ' ');
+
+return 0;
+// range [it0,it1) contains the elements in [100,200]
+
     test_insert();
-    acl->lower_bound(acl_list_address_index(14, 
-                    range_index<DM_V4V6IPADDRESS>(DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004"),  DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
-                    range_index<unsigned int>(1239, 1239), 0));
-    return 0;
+    // acl->lower_bound(acl_list_address_index(14, 
+    //                 range_index<DM_V4V6IPADDRESS>(DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004"),  DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
+    //                 range_index<unsigned int>(1239, 1239), 0));
+    // return 0;
     test_search();
 
     system("pause");
