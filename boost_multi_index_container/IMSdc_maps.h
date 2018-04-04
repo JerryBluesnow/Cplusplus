@@ -1001,7 +1001,7 @@ struct IMS_ACL_RANGE_KEY: public IMSDC_KEY_BASE
               if (range_index<DM_V4V6IPADDRESS>(*s11.ip_addr_low, *s11.ip_addr_high) >
                   range_index<DM_V4V6IPADDRESS>(*s22.ip_addr_low, *s22.ip_addr_high))
               {
-                  return (true);
+                  return (false;
               }
           }
 
@@ -1030,7 +1030,7 @@ struct IMS_ACL_RANGE_KEY: public IMSDC_KEY_BASE
               if (range_index<USHORT>(s11.port_low, s11.port_high) >
                   range_index<USHORT>(s22.port_low, s22.port_high))
               {
-                  return (true);
+                  return (false);
               }
           }
 

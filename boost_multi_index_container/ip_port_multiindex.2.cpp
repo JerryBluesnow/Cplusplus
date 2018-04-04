@@ -11,16 +11,17 @@ using namespace std;
 using namespace boost::multi_index;  
 using boost::multi_index_container;  
 
+template<class T>
 class range_index{
 public:
-    unsigned int index_start;
-    unsigned int index_end;
+    T index_start;
+    T index_end;
 
     range_index() : index_start(0), index_end(0)
     {
         //
     }
-    range_index(unsigned int start, unsigned int end) : index_start(start), index_end(end)
+    range_index(T start, unsigned int end) : index_start(start), index_end(end)
     {
         //
     }
@@ -38,29 +39,10 @@ public:
     }
 };
 
-/*
+
+template<class T>
 bool
-operator==(const range_index &lhs, const range_index &obj)  //重载 ==
-{
-    // when start==end, it indicates the struct is a value, not a range!
-    if (lhs.index_start == lhs.index_end)
-    {
-        return ((lhs.index_start >= obj.index_start) && (lhs.index_end <= obj.index_end));
-    }
-
-    // when start==end, it indicates the struct is a value, not a range!
-    if (obj.index_start == obj.index_end)
-    {
-        return ((lhs.index_start <= obj.index_start) && (lhs.index_end >= obj.index_end));
-    }
-
-    // if above conditions aren't satisfied, it indicates two range are compared!
-    return (lhs.index_start == obj.index_start && lhs.index_end == obj.index_end);
-}
-*/
-
-bool
-operator<(const range_index &lhs, const range_index &obj)  //重载 <
+operator<(const range_index<T> &lhs, const range_index<T> &obj)  //重载 <
 {
     if ((lhs.index_start == obj.index_start) && (lhs.index_end == obj.index_end))
     {
@@ -86,7 +68,7 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 <
         {
             return (true);
         }
-        
+
         return (false);
     }
 
@@ -98,12 +80,12 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 <
         {
             return (true);
         }
-        
+
         return (false);
     }
 
     // when left is a line, and the right is also a line
-    if ((lhs.index_start != lhs.index_end) && (obj.index_start == obj.index_end))
+    if ((lhs.index_start != lhs.index_end) && (obj.index_start != obj.index_end))
     {
         // when the start index of left line is less than the right pointer start_index
         if (lhs.index_start < obj.index_start)
@@ -119,22 +101,45 @@ operator<(const range_index &lhs, const range_index &obj)  //重载 <
                 return (true);
             }
         }
- 
+
         return (false);
     }
 
     return (false);
 }
 
+template<class T>
 bool
-operator>(range_index &lhs, range_index &obj)  //重载 >
+operator==(const range_index<T> &lhs, const range_index<T> &obj)  //重载 >
 {
-    return false;
+    if ((lhs.index_start == obj.index_start) && (lhs.index_end == obj.index_end))
+    {
+        return (true);
+    }
+
+    if ((lhs.index_start >= obj.index_start) && (lhs.index_end <= obj.index_end))
+    {
+        return (true);
+    }
+
+    if ((lhs.index_start <= obj.index_start) && (lhs.index_end >= obj.index_end))
+    {
+        return (true);
+    }
+
+    return (false);
 }
 
+template<class T>
 bool
-operator>(const range_index &lhs, const range_index &obj)  //重载 >
+operator>(const range_index<T> &lhs, const range_index<T> &obj)  //重载 >
 {
+    if ((!(lhs < obj)) && (!(lhs == obj)))
+    {
+        return (true);
+    }
+    return (false);
+    #if 0
     if ((lhs.index_start == obj.index_start) && (lhs.index_end == obj.index_end))
     {
         return (false);
@@ -159,7 +164,7 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 >
         {
             return (true);
         }
-        
+
         return (false);
     }
 
@@ -171,12 +176,12 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 >
         {
             return (true);
         }
-        
+
         return (false);
     }
 
     // when left is a line, and the right is also a line
-    if ((lhs.index_start != lhs.index_end) && (obj.index_start == obj.index_end))
+    if ((lhs.index_start != lhs.index_end) && (obj.index_start != obj.index_end))
     {
         // when the start index of left line is less than the right pointer start_index
         if (lhs.index_start > obj.index_start)
@@ -192,19 +197,21 @@ operator>(const range_index &lhs, const range_index &obj)  //重载 >
                 return (true);
             }
         }
- 
+
         return (false);
     }
 
     return (false);
+    #endif // #if 0
+
 }
 
 class acl_list_address_index
 {
    public:
     unsigned int ip_prefix;
-    range_index  ip_suffix_range;
-    range_index  port_range;
+    range_index<unsigned int>  ip_suffix_range;
+    range_index<unsigned int>  port_range;
     acl_list_address_index()
     {
         ip_prefix                   = 0;
@@ -213,7 +220,7 @@ class acl_list_address_index
         port_range.index_start      = 0;
         port_range.index_end        = 0;
     }
-    acl_list_address_index(unsigned int ip_pre, range_index ip_rang, range_index port_rang)
+    acl_list_address_index(unsigned int ip_pre, range_index<unsigned int> ip_rang, range_index<unsigned int> port_rang)
         : ip_prefix(ip_pre), ip_suffix_range(ip_rang), port_range(port_rang)
     {
 
@@ -253,8 +260,8 @@ class acl_list_db
 
    public:
     acl_list_db(unsigned int        ip_pre,
-                range_index         ip_suf_rang,
-                range_index         port_rang,
+                range_index<unsigned int>        ip_suf_rang,
+                range_index<unsigned int>        port_rang,
                 acl_list_attributes acl_list_attr,
                 unsigned int        _id)
     {
@@ -347,21 +354,27 @@ operator<(const acl_list_address_index &lhs, const acl_list_address_index &rhs)
         
     if (lhs.ip_prefix > rhs.ip_prefix)
         return false;
-    cout << "ip_prefix equal, then compare ip_suffix" << endl;
-    
+
+    cout << "ip_prefix equal, then compare ip_suffix"
+         << "," << lhs.ip_prefix << "," << rhs.ip_prefix << "," << lhs.ip_suffix_range.index_start
+         << "," << rhs.ip_suffix_range.index_start << "," << lhs.port_range.index_start << ","
+         << rhs.port_range.index_start << endl;
+
     if (lhs.ip_suffix_range < rhs.ip_suffix_range)
         return true;
 
     if (lhs.ip_suffix_range > rhs.ip_suffix_range)
         return false;
-    cout << "ip_suffix equal, then compare port_range" << endl;
+
+    cout << "ip_suffix equal, then compare port"<< endl;
 
     if (lhs.port_range < rhs.port_range)
         return true;
 
     if (lhs.port_range > rhs.port_range)
         return false;
-    cout << "port_range equal, then compare nothing" << endl;
+    
+    cout << "port equal, then compare nothing"<< endl;
 
     return false;
 }
@@ -491,9 +504,8 @@ void test1()
     //MyContainer_T mycontainer;
     cout << "Allocate a new container for ACL list......" << endl;
     acl = new ACLContainer();
-    acl->insert(new acl_list_db(172018000, range_index(1, 5), range_index(1230, 1240), acl_list_attributes(), 1));
-    acl->insert(new acl_list_db(172018000, range_index(0, 3), range_index(1250, 1260), acl_list_attributes(), 2)); 
-    acl->insert(new acl_list_db(172018000, range_index(4, 8), range_index(2000, 4000), acl_list_attributes(), 1721));
+    acl->insert(new acl_list_db(174015000, range_index<unsigned int>(252, 253), range_index<unsigned int>(1000, 1200), acl_list_attributes(), 1));
+    acl->insert(new acl_list_db(174015000, range_index<unsigned int>(250, 255), range_index<unsigned int>(1230, 1240), acl_list_attributes(), 2));
     acl->print(); 
 }  
 
@@ -501,26 +513,8 @@ int main()
 {
     test1();
 
-    cout << "try to find......" << endl;
-    acl->find(acl_list_address_index(172018000, range_index(4, 4), range_index(1239, 1239)));
-    acl->find(acl_list_address_index(172018000, range_index(1, 5), range_index(1230, 1240)), 1);
-    acl->find(acl_list_address_index(172018000, range_index(1, 5), range_index(1230, 1240)));
-    cout << "try to find......" << endl;    
-    acl->find(acl_list_address_index(172018000, range_index(0, 3), range_index(1250, 1260)), 2);
-    acl->find(acl_list_address_index(172018000, range_index(0, 3), range_index(1250, 1260)));
-    cout << "try to find......" << endl;    
-    acl->find(acl_list_address_index(172018000, range_index(4, 8), range_index(2000, 4000)), 1722);
-    acl->find(acl_list_address_index(172018000, range_index(4, 8), range_index(2000, 4000)));
-
-    cout << "try to erase......" << endl;    
-    acl->erase(acl_list_address_index(172018000, range_index(0, 3), range_index(1250, 1260)), 2);
-
-    cout << "try to find......" << endl;    
-    acl->find(acl_list_address_index(172018000, range_index(0, 3), range_index(1250, 1260)), 2);
-    acl->find(acl_list_address_index(172018000, range_index(0, 3), range_index(1250, 1260)));
-
-    cout << "try to erase......" << endl;    
-    acl->erase(acl_list_address_index(172018000, range_index(1, 5), range_index(1230, 1240)), 10);
+   cout << "try to find......" << endl;
+   acl->find(acl_list_address_index(174015000, range_index<unsigned int>(254, 254), range_index<unsigned int>(1239, 1239)), 1);
 
     system("pause");
     return 0;  
