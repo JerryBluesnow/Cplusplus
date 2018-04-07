@@ -284,50 +284,7 @@ int main()
 {
     MyContainer_T s;
 
-<<<<<<< HEAD
-using namespace boost::lambda;
-typedef multi_index_container<double, double> double_set;
-// note: default template parameters resolve to
-// multi_index_container<double,indexed_by<unique<identity<double> > > >.
-
-double_set s;
-
-// s.insert(99, 120);
-// s.insert(100, 120);
-// s.insert(106, 120);
-// s.insert(110, 120);
-// s.insert(140, 120);
-// s.insert(190, 120);
-// s.insert(200, 120);
-// s.insert(200.01, 120);
-
-// std::pair<double_set::iterator,double_set::iterator> p=
-// s.range(100.0<=boost::lambda::_1,boost::lambda::_2<=200); // 100<= x <=200
-
-// for_each(p.first, p.second, std::cout << boost::lambda::_1 << ' ');
-
-// https://blog.csdn.net/playboy1/article/details/7568703
-// https://www.boost.org/doc/libs/1_64_0/libs/multi_index/doc/tutorial/basics.html#range
-// https://blog.csdn.net/lee353086/article/details/40706669
-// https://www.boost.org/doc/libs/1_55_0/libs/multi_index/doc/index.html
-// https://blog.csdn.net/lsjseu/article/details/43370707
-// https://blog.csdn.net/gongxinheng/article/details/5421914
-return 0;
-// range [it0,it1) contains the elements in [100,200]
-
-    test_insert();
-    // acl->lower_bound(acl_list_address_index(14, 
-    //                 range_index<DM_V4V6IPADDRESS>(DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004"),  DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
-    //                 range_index<unsigned int>(1239, 1239), 0));
-    // return 0;
-    test_search();
-
-    system("pause");
-    return 0;  
-}  
-=======
     std::pair<MyContainer_T::iterator, MyContainer_T::iterator> p =
         s.range(acl_list_db(1,2,DM_V4V6IPADDRESS(),DM_V4V6IPADDRESS(),2,2,0) <= boost::lambda::_1, boost::lambda::_1 <= acl_list_db(1,2,DM_V4V6IPADDRESS(),DM_V4V6IPADDRESS(),2,2,0));
     return 0;
 }
->>>>>>> update from workPC
