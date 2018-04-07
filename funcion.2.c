@@ -10,6 +10,8 @@
 #include <boost/lambda/bind.hpp>
 #include <iostream>
 
+#include "./timer/MyTimer.h"
+
 using namespace std;
 
 #define UINT unsigned int
@@ -272,14 +274,14 @@ acl_list_container* table_port_end_ptr = &table_port_end;
 static acl_list_container* table_ptr = NULL;
 
 void create_aaaa(acl_list_db db){
-    cout << "hello binding" << endl;
+    //cout << "hello binding" << endl;
 }
 
 
 void create_bbbb(acl_list_db db){
 
     table_ptr->insert(db);
-    cout << "hello binding" << endl;
+    //cout << "hello binding" << endl;
 }
 
 void
@@ -361,7 +363,7 @@ void select_stat(acl_list_container& table)
         update_pointer(table_port_end_ptr);
 
         std::for_each(ppp.first, ppp.second, bind(&create_bbbb, _1));
-        print_out_tbl_key(*table_ptr);
+        //print_out_tbl_key(*table_ptr);
     }
     return;
     // {
@@ -432,12 +434,16 @@ void select_stat(acl_list_container& table)
 int
 main(int argc, _TCHAR* argv[])
 {
+
     acl_list_container table;
+    little_timer.Start();
     create_stat(table);
+    little_timer.End();
 
     //print_out_tbl_key(table);
-    
+    little_timer.Start();
     select_stat(table);
+    little_timer.End();
     //暂停，输入任意键继续
     system("pause");
     return 0;
