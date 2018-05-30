@@ -121,19 +121,19 @@ struct vlan_id
 
 struct acl_list_db
 {
-    ACL_TBL_KEY          _tbl_key;
-    DM_V4V6IPADDRESS_PTR _ip_start;
-    DM_V4V6IPADDRESS_PTR _ip_end;
-    UINT                 _port_start;
-    UINT                 _port_end;
-    UINT                 _vlan_id;
+    ACL_TBL_KEY      _tbl_key;
+    DM_V4V6IPADDRESS _ip_start;
+    DM_V4V6IPADDRESS _ip_end;
+    UINT             _port_start;
+    UINT             _port_end;
+    UINT             _vlan_id;
 
-    acl_list_db(ACL_TBL_KEY          tbl_key,
-                DM_V4V6IPADDRESS_PTR ip_start,
-                DM_V4V6IPADDRESS_PTR ip_end,
-                UINT                 port_start,
-                UINT                 port_end,
-                UINT                 vlan_id)
+    acl_list_db(ACL_TBL_KEY      tbl_key,
+                DM_V4V6IPADDRESS ip_start,
+                DM_V4V6IPADDRESS ip_end,
+                UINT             port_start,
+                UINT             port_end,
+                UINT             vlan_id)
         : _tbl_key(tbl_key),
           _ip_start(ip_start),
           _ip_end(ip_end),
@@ -173,8 +173,8 @@ struct acl_list_db
 std::ostream&
 operator<<(std::ostream& os, const acl_list_db& dt)
 {
-    os << "[" << dt._tbl_key.tbl_id << ',' << dt._tbl_key.id << ',' << *dt._ip_start.value << ','
-       << *dt._ip_end.value << ',' << dt._port_start << ',' << dt._port_end << ',' << dt._vlan_id << "]";
+    os << "[" << dt._tbl_key.tbl_id << ',' << dt._tbl_key.id << ',' << dt._ip_start << ','
+       << dt._ip_end << ',' << dt._port_start << ',' << dt._port_end << ',' << dt._vlan_id << "]";
     os << endl;
     return os;
 }
@@ -188,10 +188,10 @@ typedef boost::multi_index::multi_index_container<
             boost::multi_index::member<acl_list_db, ACL_TBL_KEY, &acl_list_db::_tbl_key> >,
         boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<ip_start>,
-            boost::multi_index::member<acl_list_db, DM_V4V6IPADDRESS_PTR, &acl_list_db::_ip_start> >,
+            boost::multi_index::member<acl_list_db, DM_V4V6IPADDRESS, &acl_list_db::_ip_start> >,
         boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<ip_end>,
-            boost::multi_index::member<acl_list_db, DM_V4V6IPADDRESS_PTR, &acl_list_db::_ip_end> >,
+            boost::multi_index::member<acl_list_db, DM_V4V6IPADDRESS, &acl_list_db::_ip_end> >,
         boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<port_start>,
             boost::multi_index::member<acl_list_db, UINT, &acl_list_db::_port_start> >,
@@ -214,6 +214,7 @@ class ACLContainer
 public:
      acl_list_container  table;
 
+
     acl_list_container* table_ptr;
     public:
      ACLContainer()
@@ -229,7 +230,7 @@ public:
      erase(ACL_TBL_KEY tbl_key);
 
      unsigned short
-     find(ACL_TBL_KEY tbl_key, DM_V4V6IPADDRESS_PTR ip, UINT port, UINT vlan_id = 0);
+     find(ACL_TBL_KEY tbl_key, DM_V4V6IPADDRESS ip, UINT port, UINT vlan_id = 0);
      
      void
      free();
@@ -345,33 +346,33 @@ ACLContainer::unbind_table()
     table_ptr = NULL;
 }
 
-// void ACLContainer::erase(ACL_TBL_KEY input_tbl_key) 
-// {
-// //     acl_list_db* to_be_delete_obj = new acl_list_db(
-// //         ACL_TBL_KEY(input_tbl_key.tbl_id, input_tbl_key.id),
-// //         DM_V4V6IPADDRESS_PTR(IPV6_IP, "10000000000000000000000000000001"),
-// //         DM_V4V6IPADDRESS_PTR(IPV6_IP, "2511000000020cc30000000000010003"), 1200, 1400, 0);
-// //     //int count = table.erase(&to_be_delete_obj);
+void ACLContainer::erase(ACL_TBL_KEY input_tbl_key) 
+{
+//     acl_list_db* to_be_delete_obj = new acl_list_db(
+//         ACL_TBL_KEY(input_tbl_key.tbl_id, input_tbl_key.id),
+//         DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001"),
+//         DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010003"), 1200, 1400, 0);
+//     //int count = table.erase(&to_be_delete_obj);
 
-// //     // std::cout << count << " records are deleted" << endl;
+//     // std::cout << count << " records are deleted" << endl;
 
 
-// //     // may need to find a palce to delete/[new] the pointer
+//     // may need to find a palce to delete/[new] the pointer
     
-// //     //     const acl_list_by_tbl_key& tbl_key_index = table.get<tbl_key>();
-// //     //     acl_list_by_tbl_key::iterator it;  
+//     //     const acl_list_by_tbl_key& tbl_key_index = table.get<tbl_key>();
+//     //     acl_list_by_tbl_key::iterator it;  
         
-// //     //     while ( (it = tbl_key_index.find(input_tbl_key)) != tbl_key_index.end() )  
-// //     //     {  
-// //     //         //table.erase(it, it);
-// //     //     }  
+//     //     while ( (it = tbl_key_index.find(input_tbl_key)) != tbl_key_index.end() )  
+//     //     {  
+//     //         //table.erase(it, it);
+//     //     }  
 
-// //     std::pair<acl_list_container::iterator, acl_list_container::iterator> p;  
-// //    // p = table.range( ACL <= boost::lambda::_1, boost::lambda::_1 <= to_be_delete_obj); 
-// //     //table.erase(p.first, p.second);  
+//     std::pair<acl_list_container::iterator, acl_list_container::iterator> p;  
+//    // p = table.range( ACL <= boost::lambda::_1, boost::lambda::_1 <= to_be_delete_obj); 
+//     //table.erase(p.first, p.second);  
 
-//          return;
-// }  
+         return;
+}  
 
 void ACLContainer::print_out_tbl()
 {
@@ -381,12 +382,8 @@ void ACLContainer::print_out_tbl()
 
     typedef typename acl_list_container::value_type value_type;  
     
-    //std::copy(tbl_key_index.begin(), tbl_key_index.end(), std::ostream_iterator<value_type>(cout));
-    for (acl_list_by_tbl_key::iterator iter = tbl_key_index.begin(); iter != tbl_key_index.end();
-         iter++)
-    {
-        std::cout << *(*iter);
-    }
+    std::copy(tbl_key_index.begin(), tbl_key_index.end(), std::ostream_iterator<value_type>(cout));
+    
     std::cout << "--------------------E-----N-----D--------------------" << std::endl;
 
 }
@@ -416,7 +413,7 @@ void ACLContainer::print_out_curr_internal_tbl()
 
 unsigned short
 ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
-                   DM_V4V6IPADDRESS_PTR input_ip,
+                   DM_V4V6IPADDRESS input_ip,
                    UINT             input_port,
                    UINT             input_vlan_id)
 {
@@ -436,7 +433,7 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
          bind_table(table_tbl_key_ptr);
 
          std::for_each(my_pair.first, my_pair.second, bind(&ACLContainer::internal_insert, this, boost::lambda::_1));
-         print_out_curr_internal_tbl();
+         //print_out_curr_internal_tbl();
     }
 
     {
@@ -450,7 +447,7 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
         
         std::for_each(my_pair.first, my_pair.second, bind(&ACLContainer::internal_insert, this, boost::lambda::_1));
 
-         print_out_curr_internal_tbl();
+        //print_out_tbl(*table_ptr);
     }
 
     {
@@ -463,7 +460,7 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
         bind_table(table_ip_end_ptr);
 
          std::for_each(my_pair.first, my_pair.second, bind(&ACLContainer::internal_insert, this, boost::lambda::_1));
-         print_out_curr_internal_tbl();
+        //print_out_tbl(*table_ptr);
     }
 
     {
@@ -476,7 +473,7 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
         bind_table(table_port_start_ptr);
 
          std::for_each(my_pair.first, my_pair.second, bind(&ACLContainer::internal_insert, this, boost::lambda::_1));
-         print_out_curr_internal_tbl();
+        //print_out_tbl(*table_ptr);
     }
 
     {
@@ -490,7 +487,7 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
 
         std::for_each(my_pair.first, my_pair.second, bind(&ACLContainer::internal_insert, this, boost::lambda::_1));
 
-         print_out_curr_internal_tbl();
+        //print_out_tbl(*table_ptr);
     }
 
     unsigned short ret_val = -1;
@@ -514,94 +511,23 @@ ACLContainer::find(ACL_TBL_KEY      input_tbl_key,
     internal_free();
     bind_table(table_port_end_ptr);
     internal_free();
-
-    unbind_table();
+    
     return (ret_val);
 }
 
 void ACLContainer::create_stat()
 {
-    cout << "hello world" << endl;
-    for (UINT y = 0; y < 500; y++)
+    for (int table_idx=0; table_idx<40; table_idx++)
     {
-        for (UINT i = 0; i < 100;)
+        for (int item_idx=0; item_idx<50; item_idx++)
         {
             table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 0),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010003")), 1200, 1400, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 0),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010003")), 1000, 1200, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 0),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010003")), 1400, 1600, 0));
+                ACL_TBL_KEY(table_idx, item_idx), DM_V4V6IPADDRESS(IPV6_IP, "20000000000000000000000000000001"),
+                DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff"), 1239, 1239, 0));
 
             table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 3),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1200, 1400, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 4),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1000, 1200, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 5),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1400, 1600, 0));
-
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 6),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")), 1200, 1401, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 7),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")), 1000, 1200, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 8),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "10000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")), 1400, 1600, 0));
-
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 9),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2510000000020cc30000000000010003")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2611000000020cc30000000000010004")), 1200, 1400, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 10),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2510000000020cc30000000000010003")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2611000000020cc30000000000010004")), 1000, 1200, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 11),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2510000000020cc30000000000010003")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2611000000020cc30000000000010004")), 1400, 1600, 0));
-
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 12),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "20000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1200, 1402, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 13),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "20000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1000, 1200, 0));
-            table.insert(new acl_list_db(
-                ACL_TBL_KEY(y, i + 14),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "20000000000000000000000000000001")),
-                DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff")), 1400, 1600, 0));
-
-            i += 15;  
-            if ( i >= 100)
-            {
-                break;
-            }
-        }
-       
-        if (table.size() >= 40960)
-        {
-            std::cout << "size of table " << table.size() << std::endl;
-            break;
+                ACL_TBL_KEY(table_idx, item_idx+50), DM_V4V6IPADDRESS(IPV6_IP, "30000000000000000000000000000001"),
+                DM_V4V6IPADDRESS(IPV6_IP, "3fff000000000000000000000000ffff"), 1000, 1000, 0));
         }
     }
 }
@@ -615,17 +541,13 @@ main(int argc, _TCHAR* argv[])
     my_test_container.create_stat();
     little_timer.End();
 
-    //my_test_container.print_out_tbl();
-    
-    little_timer.Start();
+    my_test_container.print_out_tbl();
 
-    my_test_container.find(ACL_TBL_KEY(20,0), DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")), 1239);
-    
+    little_timer.Start();
+    while 
+    my_test_container.find(ACL_TBL_KEY(20,0), DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004"), 1239);
     little_timer.End();
 
-    my_test_container.print_out_curr_internal_tbl();
-
-    my_test_container.find(ACL_TBL_KEY(20,0), DM_V4V6IPADDRESS_PTR(new DM_V4V6IPADDRESS(IPV6_IP, "2511000000020cc30000000000010004")), 1239);
     my_test_container.print_out_curr_internal_tbl();
     //暂停，输入任意键继续
     system("pause");

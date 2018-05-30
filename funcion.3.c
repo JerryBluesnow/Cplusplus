@@ -13,27 +13,30 @@ using namespace std;
 using namespace boost::multi_index;  
 using boost::multi_index_container;  
 
+typedef struct tginfo{
+    BOOL flag_1;
+    BOOL flag_2;
+    BOOL flag_3;
+
+    unsigned int data1;
+    unsigned int data2;
+
+};
+
 int main()  
 {
+    long abc = 9999999999999;
+    std::cout << abc << endl;
 
-using namespace boost::lambda;
+tginfo my_tginfo;
 
-typedef multi_index_container<double> double_set;
+my_tginfo.flag_1 = 1;
+my_tginfo.flag_2 = 0;
+my_tginfo.flag_3 = 1;
+my_tginfo.data1= 3;
+my_tginfo.data2= 3;
+my_tginfo.flag_1 = abc;
 
-double_set s;
-
-s.insert(99);
-s.insert(100);
-s.insert(106);
-s.insert(110);
-s.insert(140);
-s.insert(190);
-s.insert(200);
-s.insert(200.01);
-
-std::pair<double_set::iterator,double_set::iterator> p=
-  s.range(100.0<=boost::lambda::_1,boost::lambda::_1<200);
-
-for_each(p.first, p.second, std::cout << boost::lambda::_1 << ' ');
-    return 0;  
+my_tginfo;
+return 0;  
 }  

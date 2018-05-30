@@ -1,26 +1,3 @@
 {
-    "files.associations": {
-        "*.ipp": "cpp",
-        "cctype": "cpp",
-        "cmath": "cpp",
-        "csignal": "cpp",
-        "cstdarg": "cpp",
-        "cstddef": "cpp",
-        "cstdio": "cpp",
-        "cstdlib": "cpp",
-        "cstring": "cpp",
-        "ctime": "cpp",
-        "cwchar": "cpp",
-        "cwctype": "cpp"
-    },
-    "clang-format.executable": "D:\\software\\clang-format-r325576.exe",
-    "clang-format.style": "file",
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/*.exe": true
-    }
+    
 }

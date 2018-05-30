@@ -7,6 +7,7 @@ using namespace std;
 
 #define MAX_LENGTH 16
 #define MAX_IPv6_ADDR_LEN MAX_LENGTH
+#define MAX_IPv4_ADDR_LEN 4
 
 typedef enum {
         IPV4_IP = 0,
@@ -42,10 +43,79 @@ typedef struct DM_V4V6IPADDRESS{
             addr[iy] = data_tmp[0] * 16 + data_tmp[1];
         }
     }
-    DM_V4V6IPADDRESS(){}
-    DM_V4V6IPADDRESS(int ){}
-}DM_V4V6IPADDRESS;
+    DM_V4V6IPADDRESS() {}
+    DM_V4V6IPADDRESS(int) {}
+} DM_V4V6IPADDRESS;
 
+void
+plus_one(DM_V4V6IPADDRESS &obj, unsigned int length)
+{
+    bool carry_bit = false;
+    for (unsigned int idx = length; idx > 0; idx--)
+    {
+        if ((idx == length) || (carry_bit == true))
+        {
+            obj.addr[idx - 1] += 0x01;
+        }
+
+        if ((obj.addr[idx - 1] == 0x00) && ((idx == length) || (carry_bit == true)))
+        {
+            carry_bit = true;
+        }
+        else
+        {
+            carry_bit = false;
+        }
+    }
+
+    return;
+}
+
+void
+minus_one(DM_V4V6IPADDRESS &obj, unsigned int length)
+{
+    bool carry_bit = false;
+    for (unsigned int idx = length; idx > 0; idx--)
+    {
+        if ((idx == length) || (carry_bit == true))
+        {
+            obj.addr[idx - 1] -= 0x01;
+        }
+
+        if ((obj.addr[idx - 1] == 0xff) && ((idx == length) || (carry_bit == true)))
+        {
+            carry_bit = true;
+        }
+        else
+        {
+            carry_bit = false;
+        }
+    }
+
+    return;
+}
+
+// prefix
+DM_V4V6IPADDRESS &
+operator++(DM_V4V6IPADDRESS &obj)
+{
+    unsigned int length = (obj.ip_type == IPV4_IP) ? MAX_IPv4_ADDR_LEN : MAX_IPv6_ADDR_LEN;
+
+    plus_one(obj, length);
+
+    return obj;
+}
+
+// prefix
+DM_V4V6IPADDRESS &
+operator--(DM_V4V6IPADDRESS &obj)
+{
+    unsigned int length = (obj.ip_type == IPV4_IP) ? MAX_IPv4_ADDR_LEN : MAX_IPv6_ADDR_LEN;
+
+    minus_one(obj, length);
+
+    return obj;
+}
 
 inline int IPcompare(const DM_V4V6IPADDRESS &c1,const DM_V4V6IPADDRESS &c2)
 {
@@ -71,8 +141,52 @@ inline bool operator <(const DM_V4V6IPADDRESS &c1, const DM_V4V6IPADDRESS &c2)
         return IPcompare(c1, c2) < 0;
 }
 
-std::ostream &
-operator<<(std::ostream &output, const DM_V4V6IPADDRESS &data)
+inline bool operator >=(const DM_V4V6IPADDRESS &c1, const DM_V4V6IPADDRESS &c2)
+{
+        return !(IPcompare(c1, c2) < 0);
+}
+
+inline bool operator <=(const DM_V4V6IPADDRESS &c1, const DM_V4V6IPADDRESS &c2)
+{
+        return !(IPcompare(c1, c2) > 0);
+}
+
+
+typedef struct DM_V4V6IPADDRESS_PTR{
+    DM_V4V6IPADDRESS *value;
+    DM_V4V6IPADDRESS_PTR(DM_V4V6IPADDRESS *value):value(value)
+    {
+    }
+}DM_V4V6IPADDRESS_PTR;
+
+inline bool operator ==(const DM_V4V6IPADDRESS_PTR &c1, const DM_V4V6IPADDRESS_PTR &c2)
+{
+        return IPcompare(*c1.value, *c2.value) == 0;
+}
+
+inline bool operator >(const DM_V4V6IPADDRESS_PTR &c1, const DM_V4V6IPADDRESS_PTR &c2)
+{
+        return IPcompare(*c1.value, *c2.value) > 0;
+}
+
+inline bool operator <(const DM_V4V6IPADDRESS_PTR &c1, const DM_V4V6IPADDRESS_PTR &c2)
+{
+        return IPcompare(*c1.value, *c2.value) < 0;
+}
+
+inline bool operator >=(const DM_V4V6IPADDRESS_PTR &c1, const DM_V4V6IPADDRESS_PTR &c2)
+{
+        return !(IPcompare(*c1.value, *c2.value) < 0);
+}
+
+inline bool operator <=(const DM_V4V6IPADDRESS_PTR &c1, const DM_V4V6IPADDRESS_PTR &c2)
+{
+        return !(IPcompare(*c1.value, *c2.value) > 0);
+}
+
+
+inline ostream &
+operator<<(ostream &output, const DM_V4V6IPADDRESS &data)
 {
     output << "ip_type[" << (int)data.ip_type<<"]";
     output << "ip_addr[";

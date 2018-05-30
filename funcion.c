@@ -58,6 +58,18 @@ struct Mother_B
 
 int main()
 {
+        std::string s = "This is an example";
+    std::cout << s << '\n';
+ 
+    s.erase(0, 5); // Erase "This "
+    std::cout << s << '\n';
+ 
+    s.erase(std::find(s.begin(), s.end(), ' ')); // Erase ' '
+    std::cout << s << '\n';
+ 
+    s.erase(s.find(' ')); // Trim from ' ' to the end of the string
+    std::cout << s << '\n';
+    return 0;
     Mother *object_opr = new Son();
 
     object_opr->function_1();
